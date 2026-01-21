@@ -1,33 +1,42 @@
-# Project
+# QDK/Chemistry Data
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+QDK/Chemistry Data is an open-source data repository within the [Azure Quantum Development Kit (QDK)](https://github.com/microsoft/qdk).
+It provides curated quantum chemistry simulation data, molecular benchmarks, and reference datasets for use with [QDK/Chemistry](https://github.com/microsoft/qdk-chemistry).
 
-As the maintainer of this project, please make a few updates:
+## Overview
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+QDK/Chemistry Data provides:
+
+- Curated molecular structure data and metadata
+- Benchmark datasets for quantum chemistry algorithms
+- Reference Hamiltonians and orbital data
+- Schema definitions for data validation
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit [Contributor License Agreements](https://cla.opensource.microsoft.com).
+There are many ways in which you can participate in this project, for example:
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+- [Submit bugs and feature requests](https://github.com/microsoft/qdk-chemistry-data/issues), and help us verify as they are checked in
+- Review [source code changes](https://github.com/microsoft/qdk-chemistry-data/pulls)
+- Review the documentation and make pull requests for anything from typos to additional and new content
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+If you are interested in fixing issues and contributing directly to the code base,
+please see the document [How to Contribute](https://github.com/microsoft/qdk-chemistry-data/blob/main/CONTRIBUTING.md).
+
+## Support
+
+For help and questions about using this project, please see [SUPPORT](./SUPPORT.md).
+
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## License
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [MIT](LICENSE.txt) license.
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
-trademarks or logos is subject to and must follow
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-parties' policies.
