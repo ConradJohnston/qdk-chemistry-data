@@ -105,7 +105,9 @@ def check_dataset(dataset_dir: Path) -> list[str]:
             # Check XYZ file exists and coordinates match
             xyz_file = dataset_dir / "xyz" / f"{label}.xyz"
             if not xyz_file.exists():
-                errors.append(f"{json_file.name}/{label}: Missing XYZ file: {xyz_file.name}")
+                errors.append(
+                    f"{json_file.name}/{label}: Missing XYZ file: {xyz_file.name}"
+                )
             else:
                 # Compare coordinate lines (skip line 2 which is a comment line
                 # that may differ between the standalone file and JSON)
@@ -125,7 +127,9 @@ def check_dataset(dataset_dir: Path) -> list[str]:
             # Check image file exists
             img_file = dataset_dir / "images" / f"{label}.png"
             if not img_file.exists():
-                errors.append(f"{json_file.name}/{label}: Missing image: {img_file.name}")
+                errors.append(
+                    f"{json_file.name}/{label}: Missing image: {img_file.name}"
+                )
 
             # Check raw output file exists
             out_file = dataset_dir / "raw_output" / f"{label}.out"
@@ -155,9 +159,7 @@ def check_dataset(dataset_dir: Path) -> list[str]:
 
             mass = mol["structure"].get("total_mass_amu", 0)
             if not isinstance(mass, (int, float)) or mass <= 0:
-                errors.append(
-                    f"{json_file.name}/{label}: Invalid mass={mass}"
-                )
+                errors.append(f"{json_file.name}/{label}: Invalid mass={mass}")
 
     return errors
 

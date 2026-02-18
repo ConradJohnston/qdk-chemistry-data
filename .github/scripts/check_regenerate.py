@@ -15,13 +15,14 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Any
 
 # Keys that regenerate.py adds during collation but are not stored in the
 # committed JSON (they are intermediate artefacts).
 TRANSIENT_KEYS = {"output_file_text", "output_file_name", "workflow_timing"}
 
 
-def normalize(records: list[dict]) -> list[dict]:
+def normalize(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Remove transient keys and sort by name for stable comparison."""
     cleaned = []
     for mol in records:
@@ -29,14 +30,16 @@ def normalize(records: list[dict]) -> list[dict]:
     return sorted(cleaned, key=lambda m: m["name"])
 
 
-def project_to_schema(record: dict, reference: dict) -> dict:
+def project_to_schema(
+    record: dict[str, Any], reference: dict[str, Any]
+) -> dict[str, Any]:
     """Project a record down to only the keys (and sub-keys) in the reference.
 
     The regenerate script may parse additional fields from the logs that were
     intentionally excluded from the committed JSON. This function strips those
     extra fields so the comparison is fair.
     """
-    result = {}
+    result: dict[str, Any] = {}
     for k, ref_val in reference.items():
         if k not in record:
             continue
@@ -45,7 +48,12 @@ def project_to_schema(record: dict, reference: dict) -> dict:
             result[k] = project_to_schema(rec_val, ref_val)
         elif isinstance(ref_val, list) and isinstance(rec_val, list):
             # For lists of dicts, project each element
-            if ref_val and isinstance(ref_val[0], dict) and rec_val and isinstance(rec_val[0], dict):
+            if (
+                ref_val
+                and isinstance(ref_val[0], dict)
+                and rec_val
+                and isinstance(rec_val[0], dict)
+            ):
                 result[k] = [
                     project_to_schema(r, ref_val[min(i, len(ref_val) - 1)])
                     for i, r in enumerate(rec_val)
@@ -57,7 +65,9 @@ def project_to_schema(record: dict, reference: dict) -> dict:
     return result
 
 
-def diff_records(committed: list[dict], regenerated: list[dict]) -> list[str]:
+def diff_records(
+    committed: list[dict[str, Any]], regenerated: list[dict[str, Any]]
+) -> list[str]:
     """Return human-readable differences between two molecule lists."""
     errors: list[str] = []
 
@@ -68,9 +78,13 @@ def diff_records(committed: list[dict], regenerated: list[dict]) -> list[str]:
     only_regenerated = set(regenerated_by_name) - set(committed_by_name)
 
     for name in sorted(only_committed):
-        errors.append(f"{name}: present in committed JSON but not in regenerated output")
+        errors.append(
+            f"{name}: present in committed JSON but not in regenerated output"
+        )
     for name in sorted(only_regenerated):
-        errors.append(f"{name}: present in regenerated output but not in committed JSON")
+        errors.append(
+            f"{name}: present in regenerated output but not in committed JSON"
+        )
 
     for name in sorted(set(committed_by_name) & set(regenerated_by_name)):
         c = committed_by_name[name]
@@ -109,11 +123,8 @@ def main() -> int:
             with open(json_file, encoding="utf-8") as f:
                 committed = json.load(f)
 
-            # Run regenerate.py --collate-only into a temp file
-            with tempfile.TemporaryDirectory() as tmp:
-                tmp_json = Path(tmp) / json_file.name
-
-                # Patch the output path by running collate with modified args
+            # Run regenerate.py --collate-only (writes JSON in-place)
+            with tempfile.TemporaryDirectory():
                 result = subprocess.run(
                     [sys.executable, str(regenerate_script), "--collate-only"],
                     cwd=str(dataset_dir),
@@ -155,7 +166,9 @@ def main() -> int:
         print("\nRun 'regenerate.py --collate-only' and commit the updated JSON.")
         return 1
 
-    print("\nAll regeneration checks passed — committed JSON matches regenerated output.")
+    print(
+        "\nAll regeneration checks passed — committed JSON matches regenerated output."
+    )
     return 0
 
 
