@@ -35,6 +35,19 @@ jobs:
       - name: Validate datasets
         run: python .github/scripts/check_data_integrity.py
 
+  regenerate-check:
+    name: Regenerate check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify JSON matches regenerate.py --collate-only
+        run: python .github/scripts/check_regenerate.py
+
   markdown-links:
     name: Markdown link check
     runs-on: ubuntu-latest
