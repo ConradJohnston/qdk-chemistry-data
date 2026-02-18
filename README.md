@@ -1,4 +1,4 @@
-# QDK/Chemistry-Data 
+# QDK/Chemistry-Data
 *Simulation Data generated via the Microsoft Quantum Development Kit for Chemistry (QDK/Chemistry)*
 
 QDK/Chemistry Data is an open-source data repository within the [Microsoft Quantum Development Kit (QDK)](https://github.com/microsoft/qdk).
