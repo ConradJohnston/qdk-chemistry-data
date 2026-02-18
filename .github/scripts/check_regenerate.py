@@ -86,6 +86,7 @@ def diff_records(committed: list[dict], regenerated: list[dict]) -> list[str]:
 
 
 def main() -> int:
+    """Scan all datasets and verify each JSON matches its regenerated output."""
     repo_root = Path(__file__).resolve().parents[2]
     datasets_dir = repo_root / "data" / "molecules"
 
