@@ -36,6 +36,12 @@ pythonz estimate_f2.py
 
 ## Methodology
 
+The wavefunctions in `data/input_wavefunctions.json` come from two sources.
+The eight non-F2 entries were extracted from the `sparse_ci_finder` records in
+the [SparseCI-24 dataset](../SparseCI-24/). The F2 entry is the 14-configuration
+truncated SCI wavefunction used for the fluorine benchmark in the accompanying
+paper, with eight active orbitals represented by 16 qubits.
+
 The random benchmark uses a fixed seed of 42. For each even qubit count, it
 constructs a half-filled system, samples unique excitations from the
 Hartree-Fock determinant, and sets the number of configurations equal to the
@@ -70,7 +76,8 @@ SparseIsometry-2026/
 ├── state_preparation_methods.py      # Resource estimators for four methods
 ├── data/
 │   ├── input_wavefunctions.json      # Nine molecular wavefunctions
-│   └── structures/                   # Corresponding XYZ structures
+│   └── structures/
+│       └── f2.xyz                    # F2 molecular geometry
 └── output/
 │   ├── random_matrix_results.json    # Random and molecular benchmark results
 │   ├── f2_matrix_results.json        # F2 prefix-scan results
