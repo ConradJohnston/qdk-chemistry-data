@@ -12,6 +12,11 @@ state preparation methods(``gf2x``, ``gf2x_binary_encoding``,
     vs. dense breakdown for three sample points per method.
 """
 
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 import argparse
 import json
 from pathlib import Path
@@ -202,7 +207,7 @@ def plot_performance_lines(
     fig_dir: Path,
     x_key: str = "num_dets",
 ) -> None:
-    """Plot logical-qubit, Clifford, and non-Clifford counts vs. number of configurations.
+    """Plot resource counts against the number of configurations.
 
     Produces one subplot per active metric on a log-y scale and saves the
     figure to ``figures/{name}_matrix_results.png``.
@@ -363,7 +368,9 @@ def plot_stacked_resources(
 def main() -> None:
     """Parse command-line arguments and run the molecule benchmark."""
     parser = argparse.ArgumentParser(
-        description="Benchmark sparse state preparation methods on a molecule wavefunction."
+        description=(
+            "Benchmark sparse state preparation methods on a molecule wavefunction."
+        )
     )
     parser.add_argument(
         "--wfn_path",

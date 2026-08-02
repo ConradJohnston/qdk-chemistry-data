@@ -17,6 +17,11 @@ Also provides helpers shared across methods: ``dense_state_prep``,
 Requires: qdk_chemistry, qualtran, qiskit, numpy.
 """
 
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 from typing import Any
 
 import numpy as np
@@ -58,14 +63,18 @@ except ImportError:
 
 try:
     from qualtran import QFxp
-    from qualtran.bloqs.state_preparation.sparse_state_preparation_via_rotations import (
-        SparseStatePreparationViaRotations,
+    from qualtran.bloqs.state_preparation import (
+        sparse_state_preparation_via_rotations,
     )
     from qualtran.resource_counting import QECGatesCost, QubitCount, get_cost_value
 except ImportError:
     raise ImportError(
         "ERROR: qualtran is required for sparse isometry resource estimation. "
     )
+
+SparseStatePreparationViaRotations = (
+    sparse_state_preparation_via_rotations.SparseStatePreparationViaRotations
+)
 
 # Magic numbers required by the reference methods but unused in the benchmarking
 PHASE_BITSIZE = 6

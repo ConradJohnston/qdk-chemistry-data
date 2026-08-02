@@ -6,6 +6,11 @@ etc.). Each determinant is represented as a binary occupation vector over
 spin-orbitals.
 """
 
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
+
 from typing import Optional
 
 import numpy as np
@@ -77,7 +82,7 @@ def _random_excitation(
         if max_excitation_order is not None:
             max_exc = min(max_exc, max_excitation_order)
 
-        # Randomly choose excitation order for this channel (0 means no excitation in this channel)
+        # Zero means no excitation in this channel.
         order = rng.integers(0, max_exc + 1)
         if order == 0:
             continue
@@ -116,7 +121,7 @@ def generate_determinants_matrix(
     Args:
         n_electrons: Total number of electrons.
         n_orbitals:  Number of spatial orbitals (spin-orbitals = 2 * n_orbitals).
-        n_dets:      Number of determinants to generate (including HF if include_hf=True).
+        n_dets:      Number of determinants to generate, including HF if requested.
         seed:        Random seed for reproducibility.
         max_excitation_order: Maximum excitation rank per spin channel.
                               None means up to the maximum possible.
@@ -141,7 +146,8 @@ def generate_determinants_matrix(
         )
     if n_alpha > n_orbitals or n_beta > n_orbitals:
         raise ValueError(
-            f"Cannot place {n_alpha} alpha or {n_beta} beta electrons in {n_orbitals} orbitals"
+            f"Cannot place {n_alpha} alpha or {n_beta} beta electrons in "
+            f"{n_orbitals} orbitals"
         )
     if n_dets < 1:
         raise ValueError("n_dets must be at least 1")
@@ -152,7 +158,8 @@ def generate_determinants_matrix(
     max_possible = comb(n_orbitals, n_alpha) * comb(n_orbitals, n_beta)
     if n_dets > max_possible:
         raise ValueError(
-            f"Requested {n_dets} determinants but the total space has only {max_possible}"
+            f"Requested {n_dets} determinants but the total space has only "
+            f"{max_possible}"
         )
 
     rng = np.random.default_rng(seed)
@@ -286,7 +293,8 @@ def generate_sparse_isometry_matrix(
         n_alpha:     Number of alpha electrons. Defaults to n_electrons // 2.
         n_beta:      Number of beta electrons. Defaults to n_electrons - n_alpha.
         include_hf:  Whether to always include the HF determinant as the first column.
-        encoding:    Fermion-to-qubit encoding: ``"jordan-wigner"`` or ``"bravyi-kitaev"``.
+        encoding: Fermion-to-qubit encoding. Supported values are
+            ``"jordan-wigner"`` and ``"bravyi-kitaev"``.
 
     Returns:
         np.ndarray of shape (2 * n_orbitals, n_dets) with entries 0 or 1.
@@ -296,7 +304,8 @@ def generate_sparse_isometry_matrix(
     """
     if encoding not in ("jordan-wigner", "bravyi-kitaev"):
         raise ValueError(
-            f"Unknown encoding '{encoding}'. Supported: 'jordan-wigner', 'bravyi-kitaev'"
+            f"Unknown encoding '{encoding}'. Supported: 'jordan-wigner', "
+            "'bravyi-kitaev'"
         )
 
     det_matrix = generate_determinants_matrix(
@@ -313,9 +322,9 @@ def generate_sparse_isometry_matrix(
     # Build the (n_qubits, n_dets) matrix directly from occupation vectors
     # without going through string intermediates.
     # Layout conversion: det_matrix rows are [alpha_0..alpha_{N-1}, beta_0..beta_{N-1}]
-    # Target column layout:  [q[0]..q[2N-1]] where q = [alpha[::-1] | beta[::-1]] reversed
+    # Target columns use q[0]..q[2N-1], with reversed alpha and beta blocks.
     #   i.e. q[0]=alpha_0, q[1]=alpha_1, ..., q[N]=beta_0, q[N+1]=beta_1, ...
-    # This matches: bitstring = beta[::-1] + alpha[::-1] then reverse → alpha + beta order
+    # Reversing beta[::-1] + alpha[::-1] gives alpha + beta order.
     n_qubits = 2 * n_orbitals
     # det_matrix is (n_dets, 2*n_orbitals) with [alpha|beta] layout
     # The qubit order q[0]..q[2N-1] = alpha_0, alpha_1, ..., beta_0, beta_1, ...

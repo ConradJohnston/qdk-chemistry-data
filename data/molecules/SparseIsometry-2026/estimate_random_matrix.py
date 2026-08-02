@@ -6,12 +6,17 @@ This script:
 1. Generates sparse isometry matrices across a grid of ``(num_qubits, num_configs)``
    using half-filling (``n_electrons = n_orbitals = num_qubits / 2``),
    Jordan-Wigner encoding (via ``generate_determinants_matrix``).
-2. Loads chemical wavefunctions from ``data/input_wavefunctions.json`` (excluding F2) and estimates
-    resources for each.
+2. Loads chemical wavefunctions from ``data/input_wavefunctions.json``
+    (excluding F2) and estimates resources for each.
 3. Runs resource estimation for each method on each generated matrix or wavefunction.
 4. Collects resource metrics (logical qubits, non-Clifford count, Clifford
    count) and saves a checkpoint JSON and a scaled line plot into ``output/``.
 """
+
+# --------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+# --------------------------------------------------------------------------------------------
 
 import argparse
 import json
@@ -123,8 +128,8 @@ def run_benchmark(
     """Run the full benchmark scan over random matrices and chemical wavefunctions.
 
     Args:
-        wfn_json: Path to the JSON file containing chemical wavefunctions
-            (e.g. ``data/input_wavefunctions.json``).  Molecules named ``"F2"`` are skipped.
+        wfn_json: Path to the JSON file containing chemical wavefunctions.
+            Molecules named ``"F2"`` are skipped.
         output_dir: Directory for checkpoint JSON files and cached matrices.
         seed: RNG seed for coefficient generation and matrix sampling.
         qubits_list: Qubit counts to benchmark. Defaults to
@@ -196,7 +201,13 @@ def run_benchmark(
                 **est,
             }
             data.append(row)
-            _save_checkpoint(data, output_dir, seed, qubits_list, num_configs_ratio)
+            _save_checkpoint(
+                data,
+                output_dir,
+                seed,
+                qubits_list,
+                num_configs_ratio,
+            )
 
     # 2. Chemical Data Benchmark (from data/input_wavefunctions.json)
     if wfn_json.exists():
@@ -238,7 +249,13 @@ def run_benchmark(
                     **est,
                 }
                 data.append(row)
-                _save_checkpoint(data, output_dir, seed, qubits_list, num_configs_ratio)
+                _save_checkpoint(
+                    data,
+                    output_dir,
+                    seed,
+                    qubits_list,
+                    num_configs_ratio,
+                )
     else:
         Logger.warn(f"Chemical data not found at {wfn_json} — skipping")
 
@@ -493,7 +510,10 @@ def main() -> None:
     Args are taken from ``sys.argv``.  Run with ``--help`` for usage.
     """
     parser = argparse.ArgumentParser(
-        description="Benchmark sparse state preparation methods on random and chemical wavefunctions."
+        description=(
+            "Benchmark sparse state preparation methods on random and chemical "
+            "wavefunctions."
+        )
     )
     parser.add_argument(
         "--wfn_path",
