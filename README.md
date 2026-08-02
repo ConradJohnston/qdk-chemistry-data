@@ -18,6 +18,7 @@ QDK/Chemistry Data provides:
 | Dataset | Description | Molecules |
 |---------|-------------|-----------|
 | [SparseCI-24](data/molecules/SparseCI-24/) | Molecules with compact sparse CI wavefunctions (≤6 determinants, <1 mHa accuracy) | 24 |
+| [SparseIsometry-2026](data/molecules/SparseIsometry-2026/) | Sparse-isometry resource-estimation inputs, results, and figure-generation scripts | 9 |
 
 ## Contributing
 
