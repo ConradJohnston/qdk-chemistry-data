@@ -1,8 +1,9 @@
 {
     "Rupprecht2026": [
         {
-            "num_dets": 2,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 2,
             "sparse": {
                 "logical_qubits": 18,
                 "toffoli_count": 0,
@@ -16,11 +17,14 @@
                 "rotation_count": 2,
                 "non_clifford_count": 2,
                 "clifford_count": 4
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 3,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 3,
             "sparse": {
                 "logical_qubits": 19,
                 "toffoli_count": 1,
@@ -34,11 +38,14 @@
                 "rotation_count": 6,
                 "non_clifford_count": 6,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 4,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 4,
             "sparse": {
                 "logical_qubits": 19,
                 "toffoli_count": 3,
@@ -52,11 +59,14 @@
                 "rotation_count": 4,
                 "non_clifford_count": 4,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 5,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 5,
             "sparse": {
                 "logical_qubits": 20,
                 "toffoli_count": 4,
@@ -70,11 +80,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 6,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 6,
             "sparse": {
                 "logical_qubits": 20,
                 "toffoli_count": 6,
@@ -88,11 +101,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 7,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 7,
             "sparse": {
                 "logical_qubits": 20,
                 "toffoli_count": 7,
@@ -106,11 +122,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 8,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 8,
             "sparse": {
                 "logical_qubits": 20,
                 "toffoli_count": 8,
@@ -124,11 +143,14 @@
                 "rotation_count": 14,
                 "non_clifford_count": 14,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 9,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 9,
             "sparse": {
                 "logical_qubits": 21,
                 "toffoli_count": 9,
@@ -142,11 +164,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 10,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 10,
             "sparse": {
                 "logical_qubits": 21,
                 "toffoli_count": 10,
@@ -160,11 +185,14 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 11,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 11,
             "sparse": {
                 "logical_qubits": 21,
                 "toffoli_count": 11,
@@ -178,11 +206,14 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 12,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 12,
             "sparse": {
                 "logical_qubits": 21,
                 "toffoli_count": 12,
@@ -196,11 +227,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 13,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 13,
             "sparse": {
                 "logical_qubits": 21,
                 "toffoli_count": 14,
@@ -214,11 +248,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 14,
+            "method": "Rupprecht2026",
             "num_qubits": 16,
+            "num_dets": 14,
             "sparse": {
                 "logical_qubits": 21,
                 "toffoli_count": 17,
@@ -232,13 +269,16 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         }
     ],
     "Ramacciotti2024": [
         {
-            "num_dets": 2,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 2,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 90,
@@ -252,11 +292,14 @@
                 "rotation_count": 2,
                 "non_clifford_count": 2,
                 "clifford_count": 4
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 3,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 3,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 135,
@@ -270,11 +313,14 @@
                 "rotation_count": 6,
                 "non_clifford_count": 6,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 4,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 4,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 180,
@@ -288,11 +334,14 @@
                 "rotation_count": 4,
                 "non_clifford_count": 4,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 5,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 5,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 225,
@@ -306,11 +355,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 6,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 6,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 270,
@@ -324,11 +376,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 7,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 7,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 315,
@@ -342,11 +397,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 8,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 8,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 360,
@@ -360,11 +418,14 @@
                 "rotation_count": 14,
                 "non_clifford_count": 14,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 9,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 9,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 405,
@@ -378,11 +439,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 10,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 10,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 450,
@@ -396,11 +460,14 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 11,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 11,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 495,
@@ -414,11 +481,14 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 12,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 12,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 540,
@@ -432,11 +502,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 13,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 13,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 585,
@@ -450,11 +523,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 14,
+            "method": "Ramacciotti2024",
             "num_qubits": 16,
+            "num_dets": 14,
             "sparse": {
                 "logical_qubits": 32,
                 "toffoli_count": 630,
@@ -468,13 +544,16 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         }
     ],
     "gf2x": [
         {
-            "num_dets": 2,
+            "method": "gf2x",
             "num_qubits": 16,
+            "num_dets": 2,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -488,11 +567,14 @@
                 "rotation_count": 2,
                 "non_clifford_count": 2,
                 "clifford_count": 4
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 3,
+            "method": "gf2x",
             "num_qubits": 16,
+            "num_dets": 3,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -506,11 +588,14 @@
                 "rotation_count": 6,
                 "non_clifford_count": 6,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 4,
+            "method": "gf2x",
             "num_qubits": 16,
+            "num_dets": 4,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -524,11 +609,14 @@
                 "rotation_count": 4,
                 "non_clifford_count": 4,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 5,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -542,11 +630,14 @@
                 "rotation_count": 18,
                 "non_clifford_count": 18,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 6,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -560,11 +651,14 @@
                 "rotation_count": 18,
                 "non_clifford_count": 18,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 7,
+            "method": "gf2x",
             "num_qubits": 16,
+            "num_dets": 7,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -578,11 +672,14 @@
                 "rotation_count": 38,
                 "non_clifford_count": 38,
                 "clifford_count": 124
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 8,
+            "method": "gf2x",
             "num_qubits": 16,
+            "num_dets": 8,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -596,11 +693,14 @@
                 "rotation_count": 110,
                 "non_clifford_count": 110,
                 "clifford_count": 252
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 9,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -614,11 +714,14 @@
                 "rotation_count": 222,
                 "non_clifford_count": 222,
                 "clifford_count": 508
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 10,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -632,11 +735,14 @@
                 "rotation_count": 174,
                 "non_clifford_count": 174,
                 "clifford_count": 508
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 11,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -650,11 +756,14 @@
                 "rotation_count": 174,
                 "non_clifford_count": 174,
                 "clifford_count": 508
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 12,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -668,11 +777,14 @@
                 "rotation_count": 222,
                 "non_clifford_count": 222,
                 "clifford_count": 508
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x",
+            "num_qubits": 16,
             "num_dets": 13,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -686,11 +798,14 @@
                 "rotation_count": 222,
                 "non_clifford_count": 222,
                 "clifford_count": 508
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 14,
+            "method": "gf2x",
             "num_qubits": 16,
+            "num_dets": 14,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -704,13 +819,16 @@
                 "rotation_count": 222,
                 "non_clifford_count": 222,
                 "clifford_count": 508
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         }
     ],
     "gf2x_binary_encoding": [
         {
-            "num_dets": 2,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 2,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -724,11 +842,14 @@
                 "rotation_count": 2,
                 "non_clifford_count": 2,
                 "clifford_count": 4
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 3,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 3,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -742,11 +863,14 @@
                 "rotation_count": 6,
                 "non_clifford_count": 6,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 4,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 4,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 0,
@@ -760,11 +884,14 @@
                 "rotation_count": 4,
                 "non_clifford_count": 4,
                 "clifford_count": 12
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x_binary_encoding",
+            "num_qubits": 16,
             "num_dets": 5,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 1,
@@ -778,11 +905,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
+            "method": "gf2x_binary_encoding",
+            "num_qubits": 16,
             "num_dets": 6,
-            "num_qubits": 16,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 1,
@@ -796,11 +926,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 7,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 7,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 4,
@@ -814,11 +947,14 @@
                 "rotation_count": 10,
                 "non_clifford_count": 10,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 8,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 8,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 5,
@@ -832,11 +968,14 @@
                 "rotation_count": 14,
                 "non_clifford_count": 14,
                 "clifford_count": 28
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 9,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 9,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 3,
@@ -850,11 +989,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 10,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 10,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 9,
@@ -868,11 +1010,14 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 11,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 11,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 9,
@@ -886,11 +1031,14 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 12,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 12,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 12,
@@ -904,11 +1052,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 13,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 13,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 12,
@@ -922,11 +1073,14 @@
                 "rotation_count": 30,
                 "non_clifford_count": 30,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         },
         {
-            "num_dets": 14,
+            "method": "gf2x_binary_encoding",
             "num_qubits": 16,
+            "num_dets": 14,
             "sparse": {
                 "logical_qubits": 16,
                 "toffoli_count": 15,
@@ -940,7 +1094,9 @@
                 "rotation_count": 24,
                 "non_clifford_count": 24,
                 "clifford_count": 60
-            }
+            },
+            "source": "chemical",
+            "molecule": "F2"
         }
-        ]
+    ]
 }
