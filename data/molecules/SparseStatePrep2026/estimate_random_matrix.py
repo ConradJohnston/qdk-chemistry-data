@@ -22,6 +22,7 @@ import argparse
 import json
 import math
 from collections.abc import Callable
+from dataclasses import asdict
 from math import comb
 from pathlib import Path
 
@@ -30,16 +31,17 @@ import numpy as np
 from generate_random_matrix import generate_determinants_matrix
 from qdk_chemistry.utils import Logger
 from state_preparation_methods import (
+    BenchmarkResult,
     Ramacciotti2024,
+    ResourceEstimateData,
     Rupprecht2026,
-    combine_estimates,
     gf2x,
     gf2x_binary_encoding,
 )
 
 
 def _save_checkpoint(
-    data: list[dict],
+    data: list[BenchmarkResult],
     output_dir: Path,
     seed: int,
     qubits_list: list[int],
@@ -48,7 +50,7 @@ def _save_checkpoint(
     """Save current results to JSON atomically.
 
     Args:
-        data: List of result dicts accumulated so far.
+        data: List of :class:`BenchmarkResult` accumulated so far.
         output_dir: Directory to write ``random_matrix_results.json`` into.
         seed: RNG seed recorded in the metadata.
         qubits_list: Qubit grid recorded in the metadata.
@@ -60,7 +62,7 @@ def _save_checkpoint(
             "qubits_list": qubits_list,
             "num_configs_ratio": num_configs_ratio,
         },
-        "data": data,
+        "data": [asdict(d) for d in data],
     }
     json_path = output_dir / "random_matrix_results.json"
     temp_path = json_path.with_suffix(".tmp")
@@ -77,8 +79,8 @@ def _estimate_method(
     bitstrings: list[str],
     coeffs: list[float],
     gf2x_max_qubits: int = 25,
-) -> dict[str, int] | None:
-    """Run a single method and return combined resource estimates.
+) -> tuple[ResourceEstimateData, ResourceEstimateData] | None:
+    """Run a single method and return its sparse and dense resource estimates.
 
     Args:
         method_name: One of ``"gf2x"``, ``"gf2x_binary_encoding"``,
@@ -88,7 +90,7 @@ def _estimate_method(
         gf2x_max_qubits: Upper qubit limit for the ``"gf2x"`` method.
 
     Returns:
-        Combined resource-estimate dict, or ``None`` if the method was
+        ``(sparse_est, dense_est)`` pair, or ``None`` if the method was
         skipped or raised an exception.
     """
     num_qubits = len(bitstrings[0])
@@ -98,7 +100,9 @@ def _estimate_method(
             f"Skipping {method_name} for q={num_qubits} (cap={gf2x_max_qubits})"
         )
         return None
-    methods: dict[str, Callable[..., tuple[dict[str, int], dict[str, int]]]] = {
+    methods: dict[
+        str, Callable[..., tuple[ResourceEstimateData, ResourceEstimateData]]
+    ] = {
         "gf2x": gf2x,
         "gf2x_binary_encoding": gf2x_binary_encoding,
         "Rupprecht2026": Rupprecht2026,
@@ -106,8 +110,7 @@ def _estimate_method(
     }
     try:
         fn = methods[method_name]
-        sparse_est, dense_est = fn(bitstrings, coeffs)
-        return combine_estimates(sparse_est, dense_est)
+        return fn(bitstrings, coeffs)
 
     except BaseException:
         Logger.warn(
@@ -124,7 +127,7 @@ def run_benchmark(
     num_configs_ratio: float = 1,
     methods: list[str] | None = None,
     gf2x_max_qubits: int = 25,
-) -> list[dict]:
+) -> list[BenchmarkResult]:
     """Run the full benchmark scan over random matrices and chemical wavefunctions.
 
     Args:
@@ -139,9 +142,7 @@ def run_benchmark(
         gf2x_max_qubits: Skip ``"gf2x"`` for systems larger than this.
 
     Returns:
-        List of result dicts, one per (method, system) pair.  Each dict
-        contains ``num_qubits``, ``num_configs``, ``method``, ``source``, and
-        the gate-count fields from :func:`_combine_estimates`.
+        List of :class:`BenchmarkResult`, one per (method, system) pair.
     """
     if qubits_list is None:
         qubits_list = list(range(4, 20, 4)) + list(range(20, 61, 10))
@@ -149,7 +150,7 @@ def run_benchmark(
         methods = METHOD_ORDER
     coeff_rng = np.random.default_rng(seed=seed)
 
-    data: list[dict] = []
+    data: list[BenchmarkResult] = []
 
     # 1. Random Matrix Benchmark
     for num_qubits in qubits_list:
@@ -192,15 +193,17 @@ def run_benchmark(
             if est is None:
                 continue
 
-            row = {
-                "num_qubits": num_qubits,
-                "num_configs": num_configs,
-                "num_configs_over_num_qubits": num_configs / num_qubits,
-                "method": method_name,
-                "source": "random",
-                **est,
-            }
-            data.append(row)
+            sparse_est, dense_est = est
+            data.append(
+                BenchmarkResult(
+                    method=method_name,
+                    num_qubits=num_qubits,
+                    num_dets=num_configs,
+                    sparse=sparse_est,
+                    dense=dense_est,
+                    source="random",
+                )
+            )
             _save_checkpoint(
                 data,
                 output_dir,
@@ -239,16 +242,18 @@ def run_benchmark(
                 if est is None:
                     continue
 
-                row = {
-                    "num_qubits": num_qubits,
-                    "num_configs": num_configs,
-                    "num_configs_over_num_qubits": num_configs / num_qubits,
-                    "method": method_name,
-                    "source": "chemical",
-                    "molecule": mol_name,
-                    **est,
-                }
-                data.append(row)
+                sparse_est, dense_est = est
+                data.append(
+                    BenchmarkResult(
+                        method=method_name,
+                        num_qubits=num_qubits,
+                        num_dets=num_configs,
+                        sparse=sparse_est,
+                        dense=dense_est,
+                        source="chemical",
+                        molecule=mol_name,
+                    )
+                )
                 _save_checkpoint(
                     data,
                     output_dir,
@@ -312,21 +317,21 @@ MOLECULE_MARKERS = [
 ]
 
 
-def plot_scaled(data: list[dict], output_path: Path) -> None:
+def plot_scaled(data: list[BenchmarkResult], output_path: Path) -> None:
     """Plot example fits of resource counts vs num_qubits for each method."""
-    subset = [d for d in data if d.get("source", "random") == "random"]
+    subset = [d for d in data if d.source == "random"]
     subset_chem = [
         d
         for d in data
-        if d.get("source") == "chemical" and not d.get("molecule", "").startswith("mol")
+        if d.source == "chemical" and not (d.molecule or "").startswith("mol")
     ]
 
     if not subset:
         Logger.warn("No data found, skipping scaled plot.")
         return
 
-    methods = [m for m in METHOD_ORDER if m in set(d["method"] for d in subset)]
-    chem_molecules = sorted(set(d.get("molecule", "") for d in subset_chem))
+    methods = [m for m in METHOD_ORDER if m in set(d.method for d in subset)]
+    chem_molecules = sorted(set(d.molecule or "" for d in subset_chem))
     mol_to_marker = {
         m: MOLECULE_MARKERS[i % len(MOLECULE_MARKERS)]
         for i, m in enumerate(chem_molecules)
@@ -334,142 +339,69 @@ def plot_scaled(data: list[dict], output_path: Path) -> None:
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    # 1. Ancilla Qubits (Linear Scale)
-    ax = axes[0]
-    for method in methods:
-        mkr = METHOD_MARKERS.get(method, "o")
-        clr = METHOD_COLORS[method]
-        pts = [d for d in subset if d["method"] == method]
-        pts.sort(key=lambda d: d["num_qubits"])
-        xs = [d["num_qubits"] for d in pts]
-        ys = [d["logical_qubits"] - d["num_qubits"] for d in pts]
+    # (ylabel, is_symlog, value function, line alpha) per panel
+    panels = [
+        (
+            "Ancillary Qubits",
+            True,
+            lambda d: d.combined.logical_qubits - d.num_qubits,
+            0.9,
+        ),
+        ("Non-Clifford Count", False, lambda d: d.combined.non_clifford_count, 0.7),
+        ("Clifford Count", False, lambda d: d.combined.clifford_count, 0.7),
+    ]
 
-        ax.plot(
-            xs,
-            ys,
-            linestyle="--",
-            marker=mkr,
-            label=METHOD_LABELS.get(method, method),
-            color=clr,
-            alpha=0.9,
-        )
+    for ax, (ylabel, is_symlog, value_fn, line_alpha) in zip(axes, panels):
+        for method in methods:
+            mkr = METHOD_MARKERS.get(method, "o")
+            clr = METHOD_COLORS[method]
+            pts = sorted(
+                (d for d in subset if d.method == method),
+                key=lambda d: d.num_qubits,
+            )
+            xs = [d.num_qubits for d in pts]
+            ys = [value_fn(d) for d in pts]
 
-        # Chemical data — per molecule
-        chem_pts = [d for d in subset_chem if d["method"] == method]
-        for mol in chem_molecules:
-            mol_pts = [d for d in chem_pts if d.get("molecule") == mol]
-            if mol_pts:
-                xs_chem = [d["num_qubits"] for d in mol_pts]
-                ys_chem = [d["logical_qubits"] - d["num_qubits"] for d in mol_pts]
-                ax.scatter(
-                    xs_chem,
-                    ys_chem,
-                    marker=mol_to_marker[mol],
-                    color=clr,
-                    edgecolors="black",
-                    linewidths=1.0,
-                    s=80,
-                    alpha=0.85,
-                    zorder=5,
-                )
+            ax.plot(
+                xs,
+                ys,
+                linestyle="--",
+                marker=mkr,
+                label=METHOD_LABELS.get(method, method),
+                color=clr,
+                alpha=line_alpha,
+            )
 
-    ax.set_xlabel("Number of Qubits", fontsize=16)
-    ax.set_ylabel("Ancillary Qubits", fontsize=16)
-    ax.tick_params(axis="both", which="major", labelsize=14)
-    ax.set_yscale("symlog", linthresh=1, linscale=0.05)
-    ax.set_ylim(bottom=0)
-    ax.grid(True, alpha=0.3)
+            # Chemical data — per molecule
+            chem_pts = [d for d in subset_chem if d.method == method]
+            for mol in chem_molecules:
+                mol_pts = [d for d in chem_pts if d.molecule == mol]
+                if mol_pts:
+                    xs_chem = [d.num_qubits for d in mol_pts]
+                    ys_chem = [value_fn(d) for d in mol_pts]
+                    ax.scatter(
+                        xs_chem,
+                        ys_chem,
+                        marker=mol_to_marker[mol],
+                        color=clr,
+                        edgecolors="black",
+                        linewidths=1.0,
+                        s=80,
+                        alpha=0.85,
+                        zorder=5,
+                    )
 
-    # 2. Non-Clifford Count (Log Scale)
-    ax = axes[1]
-    for method in methods:
-        mkr = METHOD_MARKERS.get(method, "o")
-        clr = METHOD_COLORS[method]
-        pts = [d for d in subset if d["method"] == method]
-        pts.sort(key=lambda d: d["num_qubits"])
-        xs = [d["num_qubits"] for d in pts]
-        ys = [d["non_clifford_count"] for d in pts]
+        ax.set_xlabel("Number of Qubits", fontsize=16)
+        ax.set_ylabel(ylabel, fontsize=16)
+        ax.tick_params(axis="both", which="major", labelsize=14)
+        if is_symlog:
+            ax.set_yscale("symlog", linthresh=1, linscale=0.05)
+            ax.set_ylim(bottom=0)
+        else:
+            ax.set_yscale("log")
+        ax.grid(True, alpha=0.3)
 
-        ax.plot(
-            xs,
-            ys,
-            linestyle="--",
-            marker=mkr,
-            label=METHOD_LABELS.get(method, method),
-            color=clr,
-            alpha=0.7,
-        )
-
-        # Chemical data — per molecule
-        chem_pts = [d for d in subset_chem if d["method"] == method]
-        for mol in chem_molecules:
-            mol_pts = [d for d in chem_pts if d.get("molecule") == mol]
-            if mol_pts:
-                xs_chem = [d["num_qubits"] for d in mol_pts]
-                ys_chem = [d["non_clifford_count"] for d in mol_pts]
-                ax.scatter(
-                    xs_chem,
-                    ys_chem,
-                    marker=mol_to_marker[mol],
-                    color=clr,
-                    edgecolors="black",
-                    linewidths=1.0,
-                    s=80,
-                    alpha=0.85,
-                    zorder=5,
-                )
-
-    ax.set_xlabel("Number of Qubits", fontsize=16)
-    ax.set_ylabel("Non-Clifford Count", fontsize=16)
-    ax.tick_params(axis="both", which="major", labelsize=14)
-    ax.set_yscale("log")
-    ax.grid(True, alpha=0.3)
-
-    # 3. Clifford Count (Log Scale)
-    ax = axes[2]
-    for method in methods:
-        mkr = METHOD_MARKERS.get(method, "o")
-        clr = METHOD_COLORS[method]
-        pts = [d for d in subset if d["method"] == method]
-        pts.sort(key=lambda d: d["num_qubits"])
-        xs = [d["num_qubits"] for d in pts]
-        ys = [d["clifford_count"] for d in pts]
-
-        ax.plot(
-            xs,
-            ys,
-            linestyle="--",
-            marker=mkr,
-            label=METHOD_LABELS.get(method, method),
-            color=clr,
-            alpha=0.7,
-        )
-
-        # Chemical data — per molecule
-        chem_pts = [d for d in subset_chem if d["method"] == method]
-        for mol in chem_molecules:
-            mol_pts = [d for d in chem_pts if d.get("molecule") == mol]
-            if mol_pts:
-                xs_chem = [d["num_qubits"] for d in mol_pts]
-                ys_chem = [d["clifford_count"] for d in mol_pts]
-                ax.scatter(
-                    xs_chem,
-                    ys_chem,
-                    marker=mol_to_marker[mol],
-                    color=clr,
-                    edgecolors="black",
-                    linewidths=1.0,
-                    s=80,
-                    alpha=0.85,
-                    zorder=5,
-                )
-
-    ax.set_xlabel("Number of Qubits", fontsize=16)
-    ax.set_ylabel("Clifford Count", fontsize=16)
-    ax.tick_params(axis="both", which="major", labelsize=14)
-    ax.set_yscale("log")
-    ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=14)
+    axes[2].legend(fontsize=14)
 
     # Molecule shape legend (center top) — black edge distinguishes chemical data
     if chem_molecules:

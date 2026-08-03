@@ -13,12 +13,12 @@ QDK/Chemistry Data provides:
 - Reference Hamiltonians and orbital data
 - Schema definitions for data validation
 
-## Datasets
+## Datasets and scripts
 
 | Dataset | Description | Molecules |
 |---------|-------------|-----------|
 | [SparseCI-24](data/molecules/SparseCI-24/) | Molecules with compact sparse CI wavefunctions (≤6 determinants, <1 mHa accuracy) | 24 |
-| [SparseIsometry-2026](data/molecules/SparseIsometry-2026/) | Sparse-isometry resource-estimation inputs, results, and figure-generation scripts | 9 |
+| [SparseStatePrep2026](data/molecules/SparseStatePrep2026/) | Sparse state preparation resource-estimation inputs, results, and figure-generation scripts |  |
 
 ## Contributing
 

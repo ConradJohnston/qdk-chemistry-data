@@ -26,9 +26,9 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 from state_preparation_methods import (
+    BenchmarkResult,
     Ramacciotti2024,
     Rupprecht2026,
-    combine_estimates,
     gf2x,
     gf2x_binary_encoding,
 )
@@ -57,39 +57,24 @@ class Wavefunction:
         return len(self.bitstrings[0])
 
 
-@dataclass
-class MethodResult:
-    """Resource estimates for one method on one wavefunction subset.
-
-    Args:
-        num_dets: Number of configurations in the wavefunction subset.
-        num_qubits: Number of qubits (bitstring length).
-        sparse: Resource-estimate dict for the sparse isometry circuit.
-        dense: Resource-estimate dict for the dense state preparation circuit.
-    """
-
-    num_dets: int
-    num_qubits: int
-    sparse: dict[str, Any]
-    dense: dict[str, Any]
-
-
 def scan_wfns(
     wfns: list[Wavefunction],
-) -> dict[str, list[MethodResult]]:
+    molecule: str,
+) -> dict[str, list[BenchmarkResult]]:
     """Scan through a list of wavefunctions and return resource counts.
 
     Args:
         wfns: Ordered list of :class:`Wavefunction` objects, typically produced
             by :func:`_partition_wfn`.
+        molecule: Molecule name recorded on each :class:`BenchmarkResult`.
 
     Returns:
         Dict keyed by method name (``"gf2x"``, ``"gf2x_binary_encoding"``,
         ``"Rupprecht2026"``, ``"Ramacciotti2024"``).  Each value is a list of
-        :class:`MethodResult` objects.
+        :class:`BenchmarkResult` objects.
     """
 
-    results: dict[str, list[MethodResult]] = {
+    results: dict[str, list[BenchmarkResult]] = {
         "Rupprecht2026": [],
         "Ramacciotti2024": [],
         "gf2x": [],
@@ -105,11 +90,14 @@ def scan_wfns(
         for name, method in methods.items():
             sparse_est, dense_est = method(wfn.bitstrings, wfn.coeffs)
             results[name].append(
-                MethodResult(
-                    num_dets=wfn.num_dets,
+                BenchmarkResult(
+                    method=name,
                     num_qubits=wfn.num_qubits,
+                    num_dets=wfn.num_dets,
                     sparse=sparse_est,
                     dense=dense_est,
+                    source="chemical",
+                    molecule=molecule,
                 )
             )
     return results
@@ -144,7 +132,7 @@ def _partition_wfn(entry: dict[str, Any]) -> list[Wavefunction]:
 
 def run_molecule_benchmark(
     wfn_filepath: Path, molecule: str
-) -> dict[str, list[MethodResult]]:
+) -> dict[str, list[BenchmarkResult]]:
     """Load a molecule's wavefunction from JSON and return resource counts.
 
     Args:
@@ -164,7 +152,7 @@ def run_molecule_benchmark(
     if molecule not in all_wfns:
         raise KeyError(f"Molecule {molecule!r} not found in {wfn_filepath}")
     wfns = _partition_wfn(all_wfns[molecule])
-    return scan_wfns(wfns)
+    return scan_wfns(wfns, molecule)
 
 
 # Plotting helpers
@@ -198,12 +186,12 @@ X_LABELS = {
 }
 
 
-def _process_results(results: dict[str, list[MethodResult]]) -> list[dict[str, Any]]:
+def _process_results(results: dict[str, list[BenchmarkResult]]) -> list[dict[str, Any]]:
     """Flatten per-method results into a flat list of row dicts for plotting.
 
     Args:
         results: Nested results dict as returned by :func:`scan_wfns`, keyed
-            by method name with each value a list of :class:`MethodResult`.
+            by method name with each value a list of :class:`BenchmarkResult`.
 
     Returns:
         Flat list of row dicts, each containing ``method``, ``num_dets``,
@@ -217,24 +205,23 @@ def _process_results(results: dict[str, list[MethodResult]]) -> list[dict[str, A
         for entry in entries:
             sparse = entry.sparse
             dense = entry.dense
-            combined = combine_estimates(sparse, dense)
 
             row = {
                 "method": method,
                 "num_dets": entry.num_dets,
                 "num_qubits": entry.num_qubits,
-                **combined,
-                "sparse_non_clifford_count": sparse.get("non_clifford_count", 0),
-                "dense_non_clifford_count": dense.get("non_clifford_count", 0),
-                "sparse_clifford_count": sparse.get("clifford_count", 0),
-                "dense_clifford_count": dense.get("clifford_count", 0),
+                **asdict(entry.combined),
+                "sparse_non_clifford_count": sparse.non_clifford_count,
+                "dense_non_clifford_count": dense.non_clifford_count,
+                "sparse_clifford_count": sparse.clifford_count,
+                "dense_clifford_count": dense.clifford_count,
             }
             processed.append(row)
     return processed
 
 
 def plot_performance_lines(
-    results: dict[str, list[MethodResult]],
+    results: dict[str, list[BenchmarkResult]],
     name: str,
     fig_dir: Path,
     x_key: str = "num_dets",
@@ -297,7 +284,7 @@ def plot_performance_lines(
 
 
 def plot_stacked_resources(
-    results: dict[str, list[MethodResult]],
+    results: dict[str, list[BenchmarkResult]],
     name: str,
     fig_dir: Path,
     metric: str = "non_clifford_count",

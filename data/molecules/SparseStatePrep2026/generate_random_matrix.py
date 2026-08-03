@@ -12,8 +12,8 @@ spin-orbitals.
 # --------------------------------------------------------------------------------------------
 
 from typing import Optional
-
 import numpy as np
+from math import comb
 
 
 def _hf_determinant(n_alpha: int, n_beta: int, n_orbitals: int) -> np.ndarray:
@@ -152,8 +152,6 @@ def generate_determinants_matrix(
     if n_dets < 1:
         raise ValueError("n_dets must be at least 1")
 
-    from math import comb  # noqa: PLC0415
-
     # Upper bound on the number of unique determinants
     max_possible = comb(n_orbitals, n_alpha) * comb(n_orbitals, n_beta)
     if n_dets > max_possible:
@@ -197,144 +195,3 @@ def generate_determinants_matrix(
         )
 
     return np.array(dets, dtype=np.int8)
-
-
-def _bk_transformation_matrix(n: int) -> np.ndarray:
-    """Build the n x n Bravyi-Kitaev transformation matrix.
-
-    The BK transformation converts an occupation-number vector f (JW basis)
-    to a BK qubit vector b via  b = B @ f  (mod 2).
-
-    The matrix is built recursively using the binary tree structure from
-    Seeley, Richard, and Love, J. Chem. Phys. 137, 224109 (2012):
-
-        B_1 = [[1]]
-        B_{2k} = [[B_k,  0 ],
-                  [S_k, B_k]]
-
-    where S_k is a k x k matrix with the last row all 1s (rest zeros).
-    This encodes the binary tree: qubit j stores the parity of orbitals
-    in the range [j - 2^p(j) + 1, j], where p(j) is the position of the
-    least significant set bit in (j+1).
-
-    For non-power-of-2 sizes, we pad to the next power of 2 and truncate.
-
-    Args:
-        n: Number of qubits (spin-orbitals).
-
-    Returns:
-        np.ndarray of shape (n, n) with entries 0 or 1.
-    """
-    # Find smallest power of 2 >= n
-    n_padded = 1
-    while n_padded < n:
-        n_padded *= 2
-
-    def _build(size: int) -> np.ndarray:
-        if size == 1:
-            return np.array([[1]], dtype=np.int8)
-        half = size // 2
-        b_half = _build(half)
-        top = np.hstack([b_half, np.zeros((half, half), dtype=np.int8)])
-        s_k = np.zeros((half, half), dtype=np.int8)
-        s_k[half - 1, :] = 1  # last row all ones (connects subtree roots)
-        bottom = np.hstack([s_k, b_half])
-        return np.vstack([top, bottom])
-
-    full = _build(n_padded)
-    return full[:n, :n]
-
-
-def generate_sparse_isometry_matrix(
-    n_electrons: int,
-    n_orbitals: int,
-    n_dets: int,
-    seed: int = 0,
-    max_excitation_order: Optional[int] = None,
-    n_alpha: Optional[int] = None,
-    n_beta: Optional[int] = None,
-    include_hf: bool = True,
-    encoding: str = "jordan-wigner",
-) -> np.ndarray:
-    """Generate a binary matrix in the sparse isometry format used by qdk_chemistry.
-
-    This combines determinant generation with the bitstring-to-matrix conversion
-    used in ``SparseIsometryGF2XStatePreparation._bitstrings_to_binary_matrix``.
-
-    The output matrix has shape ``(2 * n_orbitals, n_dets)`` where:
-      - Each column is a determinant
-      - Each row is a qubit (spin-orbital)
-      - Row ordering is q[0] at top (little-endian / top-down convention)
-
-    Encoding:
-      - ``"jordan-wigner"``: qubit j = occupation of spin-orbital j (direct mapping).
-      - ``"bravyi-kitaev"``: qubit j encodes parity-based combinations of occupations.
-        The BK vector is computed as  b = B @ f (mod 2)  where B is the BK
-        transformation matrix and f is the JW occupation vector.
-
-    Bitstring convention matches qdk_chemistry Jordan-Wigner encoding::
-
-        bitstring = beta_str[::-1] + alpha_str[::-1]   # q[N-1]...q[0] format
-
-    The matrix then reverses each bitstring so that q[0] is the top row::
-
-        >>> bitstrings = ["101", "010"]  # q[2]q[1]q[0] format
-        >>> matrix columns:
-        [[1 0]  # q[0]
-         [0 1]  # q[1]
-         [1 0]] # q[2]
-
-    Args:
-        n_electrons: Total number of electrons.
-        n_orbitals:  Number of spatial orbitals (spin-orbitals = 2 * n_orbitals).
-        n_dets:      Number of determinants to generate.
-        seed:        Random seed for reproducibility.
-        max_excitation_order: Maximum excitation rank per spin channel.
-        n_alpha:     Number of alpha electrons. Defaults to n_electrons // 2.
-        n_beta:      Number of beta electrons. Defaults to n_electrons - n_alpha.
-        include_hf:  Whether to always include the HF determinant as the first column.
-        encoding: Fermion-to-qubit encoding. Supported values are
-            ``"jordan-wigner"`` and ``"bravyi-kitaev"``.
-
-    Returns:
-        np.ndarray of shape (2 * n_orbitals, n_dets) with entries 0 or 1.
-
-    Raises:
-        ValueError: If encoding is not recognized.
-    """
-    if encoding not in ("jordan-wigner", "bravyi-kitaev"):
-        raise ValueError(
-            f"Unknown encoding '{encoding}'. Supported: 'jordan-wigner', "
-            "'bravyi-kitaev'"
-        )
-
-    det_matrix = generate_determinants_matrix(
-        n_electrons=n_electrons,
-        n_orbitals=n_orbitals,
-        n_dets=n_dets,
-        seed=seed,
-        max_excitation_order=max_excitation_order,
-        n_alpha=n_alpha,
-        n_beta=n_beta,
-        include_hf=include_hf,
-    )
-
-    # Build the (n_qubits, n_dets) matrix directly from occupation vectors
-    # without going through string intermediates.
-    # Layout conversion: det_matrix rows are [alpha_0..alpha_{N-1}, beta_0..beta_{N-1}]
-    # Target columns use q[0]..q[2N-1], with reversed alpha and beta blocks.
-    #   i.e. q[0]=alpha_0, q[1]=alpha_1, ..., q[N]=beta_0, q[N+1]=beta_1, ...
-    # Reversing beta[::-1] + alpha[::-1] gives alpha + beta order.
-    n_qubits = 2 * n_orbitals
-    # det_matrix is (n_dets, 2*n_orbitals) with [alpha|beta] layout
-    # The qubit order q[0]..q[2N-1] = alpha_0, alpha_1, ..., beta_0, beta_1, ...
-    # which is the same order as det_matrix columns — just transpose
-    matrix = det_matrix.T.astype(np.int8)
-
-    # Apply Bravyi-Kitaev transformation if requested
-    if encoding == "bravyi-kitaev":
-        bk_matrix = _bk_transformation_matrix(n_qubits)
-        # Use mod-2 arithmetic: matmul then mod 2
-        matrix = np.mod(bk_matrix @ matrix, 2).astype(np.int8)
-
-    return matrix
