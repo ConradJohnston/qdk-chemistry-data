@@ -1,4 +1,4 @@
-# Sparse Isometry 2026 Scripts and Data
+# Sparse State Preparation 2026 Scripts and Data
 
 Scripts, inputs, resource estimates, and figures for the paper
 "Clifford-efficient sparse state preparation for molecular wavefunctions".
@@ -31,7 +31,7 @@ Run the full resource estimates from this directory:
 
 ```bash
 python estimate_random_matrix.py
-pythonz estimate_f2.py
+python estimate_f2.py
 ```
 
 ## Methodology
@@ -68,7 +68,7 @@ Non-Clifford count is the sum of Toffoli-family gates and arbitrary rotations.
 ## File Layout
 
 ```text
-SparseIsometry-2026/
+SparseStatePrep2026/
 ├── README.md
 ├── estimate_f2.py                    # Run the F2 configuration scan
 ├── estimate_random_matrix.py         # Run random and molecular benchmarks

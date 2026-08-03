@@ -19,6 +19,7 @@ state preparation methods(``gf2x``, ``gf2x_binary_encoding``,
 
 import argparse
 import json
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
@@ -33,57 +34,88 @@ from state_preparation_methods import (
 )
 
 
+@dataclass
+class Wavefunction:
+    """A sparse wavefunction defined by basis bitstrings and coefficients.
+
+    Args:
+        bitstrings: Computational-basis bitstrings of equal length.
+        coeffs: Expansion coefficient for each bitstring.
+    """
+
+    bitstrings: list[str]
+    coeffs: list[complex]
+
+    @property
+    def num_dets(self) -> int:
+        """Number of configurations (non-zero amplitudes)."""
+        return len(self.bitstrings)
+
+    @property
+    def num_qubits(self) -> int:
+        """Number of qubits (bitstring length)."""
+        return len(self.bitstrings[0])
+
+
+@dataclass
+class MethodResult:
+    """Resource estimates for one method on one wavefunction subset.
+
+    Args:
+        num_dets: Number of configurations in the wavefunction subset.
+        num_qubits: Number of qubits (bitstring length).
+        sparse: Resource-estimate dict for the sparse isometry circuit.
+        dense: Resource-estimate dict for the dense state preparation circuit.
+    """
+
+    num_dets: int
+    num_qubits: int
+    sparse: dict[str, Any]
+    dense: dict[str, Any]
+
+
 def scan_wfns(
-    wfns: list[dict[str, Any]],
-) -> dict[str, list[dict[str, Any]]]:
+    wfns: list[Wavefunction],
+) -> dict[str, list[MethodResult]]:
     """Scan through a list of wavefunctions and return resource counts.
 
     Args:
-        wfns: Ordered list of wavefunction dicts with keys ``"bitstrings"``
-            and ``"coeffs"``, typically produced by :func:`_partition_wfn`.
+        wfns: Ordered list of :class:`Wavefunction` objects, typically produced
+            by :func:`_partition_wfn`.
 
     Returns:
         Dict keyed by method name (``"gf2x"``, ``"gf2x_binary_encoding"``,
         ``"Rupprecht2026"``, ``"Ramacciotti2024"``).  Each value is a list of
-        result dicts with keys ``num_dets``, ``num_qubits``, ``sparse``
-        (resource-estimate dict), and ``dense`` (resource-estimate dict).
+        :class:`MethodResult` objects.
     """
 
-    results: dict[str, list[dict[str, Any]]] = {
+    results: dict[str, list[MethodResult]] = {
         "Rupprecht2026": [],
         "Ramacciotti2024": [],
         "gf2x": [],
         "gf2x_binary_encoding": [],
     }
+    methods = {
+        "gf2x": gf2x,
+        "gf2x_binary_encoding": gf2x_binary_encoding,
+        "Rupprecht2026": Rupprecht2026,
+        "Ramacciotti2024": Ramacciotti2024,
+    }
     for wfn in wfns:
-        bitstrings = wfn["bitstrings"]
-        coeffs = wfn["coeffs"]
-        num_dets = len(bitstrings)
-        num_qubits = len(bitstrings[0])
-
-        base = {"num_dets": num_dets, "num_qubits": num_qubits}
-
-        sparse_est, dense_est = gf2x(bitstrings, coeffs)
-        results["gf2x"].append({**base, "sparse": sparse_est, "dense": dense_est})
-
-        sparse_est, dense_est = gf2x_binary_encoding(bitstrings, coeffs)
-        results["gf2x_binary_encoding"].append(
-            {**base, "sparse": sparse_est, "dense": dense_est}
-        )
-
-        sparse_est, dense_est = Rupprecht2026(bitstrings, coeffs)
-        results["Rupprecht2026"].append(
-            {**base, "sparse": sparse_est, "dense": dense_est}
-        )
-
-        sparse_est, dense_est = Ramacciotti2024(bitstrings, coeffs)
-        results["Ramacciotti2024"].append(
-            {**base, "sparse": sparse_est, "dense": dense_est}
-        )
+        for name, method in methods.items():
+            sparse_est, dense_est = method(wfn.bitstrings, wfn.coeffs)
+            results[name].append(
+                MethodResult(
+                    num_dets=wfn.num_dets,
+                    num_qubits=wfn.num_qubits,
+                    sparse=sparse_est,
+                    dense=dense_est,
+                )
+            )
     return results
 
 
-def _partition_wfn(entry: dict) -> list[dict[str, Any]]:
+def _partition_wfn(entry: dict[str, Any]) -> list[Wavefunction]:
     """Partition a wavefunction into prefix subsets of increasing configuration count.
 
     Starting from 2 configurations up to the full set, each subset uses the
@@ -94,25 +126,25 @@ def _partition_wfn(entry: dict) -> list[dict[str, Any]]:
             ``"coeffs"`` (list of floats).
 
     Returns:
-        List of wavefunction dicts with keys ``"bitstrings"`` and ``"coeffs"``,
-        one per prefix size from 2 to ``len(entry["bitstrings"])`` inclusive.
+        List of :class:`Wavefunction` objects, one per prefix size from 2 to
+        ``len(entry["bitstrings"])`` inclusive.
     """
     bitstrings = entry["bitstrings"]
     coeffs = entry["coeffs"]
     n_total = len(bitstrings)
-    partitions = []
+    partitions: list[Wavefunction] = []
     for n in range(2, n_total + 1):
         sub_coeffs = coeffs[:n]
         norm = np.linalg.norm(sub_coeffs)
         if norm > 0:
             sub_coeffs = [c / norm for c in sub_coeffs]
-        partitions.append({"bitstrings": bitstrings[:n], "coeffs": sub_coeffs})
+        partitions.append(Wavefunction(bitstrings=bitstrings[:n], coeffs=sub_coeffs))
     return partitions
 
 
 def run_molecule_benchmark(
     wfn_filepath: Path, molecule: str
-) -> dict[str, list[dict[str, Any]]]:
+) -> dict[str, list[MethodResult]]:
     """Load a molecule's wavefunction from JSON and return resource counts.
 
     Args:
@@ -166,12 +198,12 @@ X_LABELS = {
 }
 
 
-def _process_results(results: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
+def _process_results(results: dict[str, list[MethodResult]]) -> list[dict[str, Any]]:
     """Flatten per-method results into a flat list of row dicts for plotting.
 
     Args:
         results: Nested results dict as returned by :func:`scan_wfns`, keyed
-            by method name with each value a list of result dicts.
+            by method name with each value a list of :class:`MethodResult`.
 
     Returns:
         Flat list of row dicts, each containing ``method``, ``num_dets``,
@@ -183,14 +215,14 @@ def _process_results(results: dict[str, list[dict[str, Any]]]) -> list[dict[str,
     processed: list[dict[str, Any]] = []
     for method, entries in results.items():
         for entry in entries:
-            sparse = entry.get("sparse", {})
-            dense = entry.get("dense", {})
+            sparse = entry.sparse
+            dense = entry.dense
             combined = combine_estimates(sparse, dense)
 
             row = {
                 "method": method,
-                "num_dets": entry["num_dets"],
-                "num_qubits": entry["num_qubits"],
+                "num_dets": entry.num_dets,
+                "num_qubits": entry.num_qubits,
                 **combined,
                 "sparse_non_clifford_count": sparse.get("non_clifford_count", 0),
                 "dense_non_clifford_count": dense.get("non_clifford_count", 0),
@@ -202,7 +234,7 @@ def _process_results(results: dict[str, list[dict[str, Any]]]) -> list[dict[str,
 
 
 def plot_performance_lines(
-    results: dict[str, list[dict[str, Any]]],
+    results: dict[str, list[MethodResult]],
     name: str,
     fig_dir: Path,
     x_key: str = "num_dets",
@@ -265,7 +297,7 @@ def plot_performance_lines(
 
 
 def plot_stacked_resources(
-    results: dict[str, list[dict[str, Any]]],
+    results: dict[str, list[MethodResult]],
     name: str,
     fig_dir: Path,
     metric: str = "non_clifford_count",
@@ -353,7 +385,6 @@ def plot_stacked_resources(
 
     ax.set_ylabel(y_label, fontsize=16)
     ax.tick_params(axis="y", labelsize=14)
-    # ax.set_yscale("log")
     ax.legend(fontsize=14)
     ax.grid(True, axis="y", alpha=0.3)
 
@@ -402,8 +433,12 @@ def main() -> None:
     results = run_molecule_benchmark(args.wfn_path, molecule=args.molecule)
 
     json_path = output_dir / f"{name}_matrix_results.json"
+    serializable = {
+        method: [asdict(entry) for entry in entries]
+        for method, entries in results.items()
+    }
     with open(json_path, "w") as f:
-        json.dump(results, f, indent=4)
+        json.dump(serializable, f, indent=4)
 
     plot_performance_lines(results, name, fig_dir=figures_dir)
     plot_stacked_resources(results, name, fig_dir=figures_dir)
